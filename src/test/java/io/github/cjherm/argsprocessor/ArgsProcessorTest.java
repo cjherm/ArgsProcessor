@@ -2,15 +2,28 @@ package io.github.cjherm.argsprocessor;
 
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class ArgsProcessorTest {
 
     @Test
-    public void testMain() {
+    public void test_fullProcessingOfOneSingleStringArg(){
+        // arrange
+        String expectedArgValue = "TEST";
+        TestSubProcessor subProcessor = new TestSubProcessor();
+        TestConfig config = new TestConfig();
+        String argKey = "abc";
         String[] args = new String[3];
-        args[0] = "abc";
-        args[1] = "def";
-        args[2] = "ghi";
+        args[0] = "-" + argKey;
+        args[1] = expectedArgValue;
 
-        ArgsProcessor.main(args);
+        // act
+        ArgsProcessor<TestConfig> processor = new ArgsProcessor<>();
+        processor.addConfig(TestConfig.class, config);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.STRING, argKey);
+        TestConfig resultConfig = processor.processArgs(args);
+
+        // assert
+        assertThat(resultConfig.getAbcValue()).isEqualTo(expectedArgValue);
     }
 }
