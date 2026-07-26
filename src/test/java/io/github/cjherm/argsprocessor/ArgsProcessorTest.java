@@ -3,14 +3,17 @@ package io.github.cjherm.argsprocessor;
 import io.github.cjherm.argsprocessor.configs.TestDoubleValuesConfig;
 import io.github.cjherm.argsprocessor.configs.TestFileValuesConfig;
 import io.github.cjherm.argsprocessor.configs.TestIntegerValuesConfig;
+import io.github.cjherm.argsprocessor.configs.TestMixedValuesConfig;
 import io.github.cjherm.argsprocessor.configs.TestStringValuesConfig;
 import io.github.cjherm.argsprocessor.subprocessors.TestDoubleValuesSubProcessor;
 import io.github.cjherm.argsprocessor.subprocessors.TestFileValuesSubProcessor;
 import io.github.cjherm.argsprocessor.subprocessors.TestIntegerValuesSubProcessor;
+import io.github.cjherm.argsprocessor.subprocessors.TestMixedValuesSubProcessor;
 import io.github.cjherm.argsprocessor.subprocessors.TestStringValuesSubProcessor;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -224,5 +227,72 @@ public class ArgsProcessorTest {
         assertTrue(resultConfig.getFileValues().contains(expectedValueAsFile1));
         assertTrue(resultConfig.getFileValues().contains(expectedValueAsFile2));
         assertThat(resultConfig.getFileValues().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void test_RepeatedKeys_WithTrailingEmptyOccurrences_IntegerAndString() {
+        // arrange
+        ArgsProcessor processor = new ArgsProcessor();
+        TestMixedValuesSubProcessor subProcessor = new TestMixedValuesSubProcessor();
+        TestMixedValuesConfig config = new TestMixedValuesConfig();
+
+        String intsArgKey = "ints";
+        String stringsArgKey = "strings";
+        // -ints 9 2 -strings Peter -ints 10 -strings -ints -ints
+        String[] args = new String[]{
+                "-" + intsArgKey, "9", "2",
+                "-" + stringsArgKey, "Peter",
+                "-" + intsArgKey, "10",
+                "-" + stringsArgKey,
+                "-" + intsArgKey,
+                "-" + intsArgKey
+        };
+
+        processor.addConfig(config);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.INTEGER, intsArgKey);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.STRING, stringsArgKey);
+
+        // act
+        TestMixedValuesConfig resultConfig = (TestMixedValuesConfig) processor.processArgs(args);
+
+        // assert
+        assertTrue(resultConfig.getIntValues().containsAll(List.of(9, 2, 10)));
+        assertThat(resultConfig.getIntValues().size()).isEqualTo(3);
+
+        assertTrue(resultConfig.getStringValues().contains("Peter"));
+        assertThat(resultConfig.getStringValues().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void test_RepeatedKeys_WithTrailingEmptyOccurrences_FileAndDouble() {
+        // arrange
+        ArgsProcessor processor = new ArgsProcessor();
+        TestMixedValuesSubProcessor subProcessor = new TestMixedValuesSubProcessor();
+        TestMixedValuesConfig config = new TestMixedValuesConfig();
+
+        String fileArgKey = "file";
+        String floatArgKey = "float";
+        // -file somePath -float -float 22.2 -file somePath2 somePath3
+        String[] args = new String[]{
+                "-" + fileArgKey, "somePath",
+                "-" + floatArgKey,
+                "-" + floatArgKey, "22.2",
+                "-" + fileArgKey, "somePath2", "somePath3"
+        };
+
+        processor.addConfig(config);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.FILE, fileArgKey);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.DOUBLE, floatArgKey);
+
+        // act
+        TestMixedValuesConfig resultConfig = (TestMixedValuesConfig) processor.processArgs(args);
+
+        // assert
+        assertTrue(resultConfig.getFileValues().containsAll(
+                List.of(new File("somePath"), new File("somePath2"), new File("somePath3"))));
+        assertThat(resultConfig.getFileValues().size()).isEqualTo(3);
+
+        assertTrue(resultConfig.getDoubleValues().contains(22.2));
+        assertThat(resultConfig.getDoubleValues().size()).isEqualTo(1);
     }
 }
