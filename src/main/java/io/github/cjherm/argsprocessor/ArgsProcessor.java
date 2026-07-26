@@ -53,7 +53,9 @@ public class ArgsProcessor {
                 cfg = descriptor.processor.insertStringArgs(cfg, values);
             }
             case INTEGER -> {
-                // TODO implement INTEGER args
+                List<String> stringValues = argsKeyValuePairs.get(arg);
+                List<Integer> intValues = convertStringsToIntegers(stringValues);
+                cfg = descriptor.processor.insertIntegerArgs(cfg, intValues);
             }
             case FLOAT -> {
                 // TODO implement FLOAT args
@@ -63,6 +65,18 @@ public class ArgsProcessor {
             }
         }
         return cfg;
+    }
+
+    private List<Integer> convertStringsToIntegers(List<String> stringValues) {
+        List<Integer> intValues = new ArrayList<>();
+        for (String value : stringValues) {
+            try {
+                intValues.add(Integer.valueOf(value));
+            } catch (NumberFormatException e) {
+                // do nothing for now TODO Think about this later
+            }
+        }
+        return intValues;
     }
 
     private void createArgsKeyValueMapping(String[] args) {

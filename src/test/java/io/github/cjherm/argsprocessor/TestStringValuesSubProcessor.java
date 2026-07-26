@@ -10,4 +10,10 @@ public class TestStringValuesSubProcessor implements SubProcessor {
         testStringValuesConfig.stringValues = values;
         return testStringValuesConfig;
     }
+
+    @Override
+    public ConfigurationClass insertIntegerArgs(ConfigurationClass cfg, List<Integer> values) {
+        // do nothing
+        return cfg;
+    }
 }
