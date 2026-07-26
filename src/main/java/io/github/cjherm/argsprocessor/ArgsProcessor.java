@@ -38,10 +38,6 @@ public class ArgsProcessor {
             }
         }
 
-        for (Map.Entry<String, List<String>> entry : argsKeyValuePairs.entrySet()) {
-            System.out.println(entry.getKey() + " = " + entry.getValue());
-        }
-
         config = tempConfig;
         return config;
     }
@@ -57,8 +53,10 @@ public class ArgsProcessor {
                 List<Integer> intValues = convertStringsToIntegers(stringValues);
                 cfg = descriptor.processor.insertIntegerArgs(cfg, intValues);
             }
-            case FLOAT -> {
-                // TODO implement FLOAT args
+            case DOUBLE -> {
+                List<String> stringValues = argsKeyValuePairs.get(arg);
+                List<Double> doubleValues = convertStringsToDoubles(stringValues);
+                cfg = descriptor.processor.insertDoubleArgs(cfg, doubleValues);
             }
             case FILE -> {
                 // TODO implement FILE args
@@ -77,6 +75,20 @@ public class ArgsProcessor {
             }
         }
         return intValues;
+    }
+
+    private List<Double> convertStringsToDoubles(List<String> stringValues) {
+        List<Double> doubleValues = new ArrayList<>();
+        for (String value : stringValues) {
+            try {
+                System.out.println("VALUE: " + value);
+                doubleValues.add(Double.valueOf(value));
+                System.out.println("DOUBLE: " + Double.valueOf(value));
+            } catch (NumberFormatException e) {
+                // do nothing for now TODO Think about this later
+            }
+        }
+        return doubleValues;
     }
 
     private void createArgsKeyValueMapping(String[] args) {
@@ -100,7 +112,7 @@ public class ArgsProcessor {
     public enum ArgType {
         STRING,
         INTEGER,
-        FLOAT,
+        DOUBLE,
         FILE
     }
 }

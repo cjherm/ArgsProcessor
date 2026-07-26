@@ -1,5 +1,11 @@
 package io.github.cjherm.argsprocessor;
 
+import io.github.cjherm.argsprocessor.configs.TestDoubleValuesConfig;
+import io.github.cjherm.argsprocessor.configs.TestIntegerValuesConfig;
+import io.github.cjherm.argsprocessor.configs.TestStringValuesConfig;
+import io.github.cjherm.argsprocessor.subprocessors.TestDoubleValuesSubProcessor;
+import io.github.cjherm.argsprocessor.subprocessors.TestIntegerValuesSubProcessor;
+import io.github.cjherm.argsprocessor.subprocessors.TestStringValuesSubProcessor;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -108,5 +114,58 @@ public class ArgsProcessorTest {
         assertTrue(resultConfig.getIntValues().contains(expectedValueAsInt1));
         assertTrue(resultConfig.getIntValues().contains(expectedValueAsInt2));
         assertThat(resultConfig.getIntValues().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void test_SingleValueArg_Double() {
+        // arrange
+        ArgsProcessor processor = new ArgsProcessor();
+        TestDoubleValuesSubProcessor subProcessor = new TestDoubleValuesSubProcessor();
+        TestDoubleValuesConfig config = new TestDoubleValuesConfig();
+
+        String argKey = "testKey";
+        double expectedValueAsDouble = 2.0;
+        String inputValueAsString = "" + expectedValueAsDouble;
+        String[] args = new String[2];
+        args[0] = "-" + argKey;
+        args[1] = inputValueAsString;
+
+        processor.addConfig(config);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.DOUBLE, argKey);
+
+        // act
+        TestDoubleValuesConfig resultConfig = (TestDoubleValuesConfig) processor.processArgs(args);
+
+        // assert
+        assertThat(resultConfig.getDoubleValues().getFirst()).isEqualTo(expectedValueAsDouble);
+    }
+
+    @Test
+    public void test_TwoValueArg_Double() {
+        // arrange
+        ArgsProcessor processor = new ArgsProcessor();
+        TestDoubleValuesSubProcessor subProcessor = new TestDoubleValuesSubProcessor();
+        TestDoubleValuesConfig config = new TestDoubleValuesConfig();
+
+        String argKey = "testKey";
+        double expectedValueAsDouble1 = 1.01234122;
+        String inputValueAsString1 = "" + expectedValueAsDouble1;
+        double expectedValueAsDouble2 = 0.23124214;
+        String inputValueAsString2 = "" + expectedValueAsDouble2;
+        String[] args = new String[3];
+        args[0] = "-" + argKey;
+        args[1] = inputValueAsString1;
+        args[2] = inputValueAsString2;
+
+        processor.addConfig(config);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.DOUBLE, argKey);
+
+        // act
+        TestDoubleValuesConfig resultConfig = (TestDoubleValuesConfig) processor.processArgs(args);
+
+        // assert
+        assertTrue(resultConfig.getDoubleValues().contains(expectedValueAsDouble1));
+        assertTrue(resultConfig.getDoubleValues().contains(expectedValueAsDouble2));
+        assertThat(resultConfig.getDoubleValues().size()).isEqualTo(2);
     }
 }

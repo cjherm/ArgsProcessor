@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface SubProcessor {
     ConfigurationClass insertStringArgs(ConfigurationClass cfg, List<String> values);
-
     ConfigurationClass insertIntegerArgs(ConfigurationClass cfg, List<Integer> values);
+    ConfigurationClass insertDoubleArgs(ConfigurationClass cfg, List<Double> values);
 }
