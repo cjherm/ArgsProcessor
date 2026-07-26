@@ -7,23 +7,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ArgsProcessorTest {
 
     @Test
-    public void test_fullProcessingOfOneSingleStringArg(){
+    public void test_SingleValueArg_String() {
         // arrange
-        String expectedArgValue = "TEST";
-        TestSubProcessor subProcessor = new TestSubProcessor();
-        TestConfig config = new TestConfig();
-        String argKey = "abc";
-        String[] args = new String[3];
+        ArgsProcessor processor = new ArgsProcessor();
+        TestSingleStringValueSubProcessor subProcessor = new TestSingleStringValueSubProcessor();
+        TestSingleStringConfig config = new TestSingleStringConfig();
+
+        String argKey = "testKey";
+        String expectedArgValue = "TEST_VALUE";
+        String[] args = new String[2];
         args[0] = "-" + argKey;
         args[1] = expectedArgValue;
 
-        // act
-        ArgsProcessor<TestConfig> processor = new ArgsProcessor<>();
-        processor.addConfig(TestConfig.class, config);
+        processor.addConfig(config);
         processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.STRING, argKey);
-        TestConfig resultConfig = processor.processArgs(args);
+
+        // act
+        TestSingleStringConfig resultConfig = (TestSingleStringConfig) processor.processArgs(args);
 
         // assert
-        assertThat(resultConfig.getAbcValue()).isEqualTo(expectedArgValue);
+        assertThat(resultConfig.getStringValue()).isEqualTo(expectedArgValue);
     }
 }
