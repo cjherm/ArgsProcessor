@@ -2,12 +2,12 @@ package io.github.cjherm.argsprocessor.subprocessors;
 
 import io.github.cjherm.argsprocessor.ConfigurationClass;
 import io.github.cjherm.argsprocessor.SubProcessor;
-import io.github.cjherm.argsprocessor.configs.TestIntegerValuesConfig;
+import io.github.cjherm.argsprocessor.configs.TestFileValuesConfig;
 
 import java.io.File;
 import java.util.List;
 
-public class TestIntegerValuesSubProcessor implements SubProcessor {
+public class TestFileValuesSubProcessor implements SubProcessor {
 
     @Override
     public ConfigurationClass insertStringArgs(ConfigurationClass cfg, List<String> values) {
@@ -17,9 +17,8 @@ public class TestIntegerValuesSubProcessor implements SubProcessor {
 
     @Override
     public ConfigurationClass insertIntegerArgs(ConfigurationClass cfg, List<Integer> values) {
-        TestIntegerValuesConfig testIntegerValuesConfig = (TestIntegerValuesConfig) cfg;
-        testIntegerValuesConfig.integerValues = values;
-        return testIntegerValuesConfig;
+        // do nothing
+        return cfg;
     }
 
     @Override
@@ -30,7 +29,8 @@ public class TestIntegerValuesSubProcessor implements SubProcessor {
 
     @Override
     public ConfigurationClass insertFileArgs(ConfigurationClass cfg, List<File> values) {
-        // do nothing
-        return cfg;
+        TestFileValuesConfig testFileValuesConfig = (TestFileValuesConfig) cfg;
+        testFileValuesConfig.fileValues = values;
+        return testFileValuesConfig;
     }
 }

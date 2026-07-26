@@ -1,12 +1,16 @@
 package io.github.cjherm.argsprocessor;
 
 import io.github.cjherm.argsprocessor.configs.TestDoubleValuesConfig;
+import io.github.cjherm.argsprocessor.configs.TestFileValuesConfig;
 import io.github.cjherm.argsprocessor.configs.TestIntegerValuesConfig;
 import io.github.cjherm.argsprocessor.configs.TestStringValuesConfig;
 import io.github.cjherm.argsprocessor.subprocessors.TestDoubleValuesSubProcessor;
+import io.github.cjherm.argsprocessor.subprocessors.TestFileValuesSubProcessor;
 import io.github.cjherm.argsprocessor.subprocessors.TestIntegerValuesSubProcessor;
 import io.github.cjherm.argsprocessor.subprocessors.TestStringValuesSubProcessor;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -167,5 +171,58 @@ public class ArgsProcessorTest {
         assertTrue(resultConfig.getDoubleValues().contains(expectedValueAsDouble1));
         assertTrue(resultConfig.getDoubleValues().contains(expectedValueAsDouble2));
         assertThat(resultConfig.getDoubleValues().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void test_SingleValueArg_File() {
+        // arrange
+        ArgsProcessor processor = new ArgsProcessor();
+        TestFileValuesSubProcessor subProcessor = new TestFileValuesSubProcessor();
+        TestFileValuesConfig config = new TestFileValuesConfig();
+
+        String argKey = "testKey";
+        File expectedValueAsFile = new File("test.txt");
+        String inputValueAsString = expectedValueAsFile.getPath();
+        String[] args = new String[2];
+        args[0] = "-" + argKey;
+        args[1] = inputValueAsString;
+
+        processor.addConfig(config);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.FILE, argKey);
+
+        // act
+        TestFileValuesConfig resultConfig = (TestFileValuesConfig) processor.processArgs(args);
+
+        // assert
+        assertThat(resultConfig.getFileValues().getFirst()).isEqualTo(expectedValueAsFile);
+    }
+
+    @Test
+    public void test_TwoValueArg_File() {
+        // arrange
+        ArgsProcessor processor = new ArgsProcessor();
+        TestFileValuesSubProcessor subProcessor = new TestFileValuesSubProcessor();
+        TestFileValuesConfig config = new TestFileValuesConfig();
+
+        String argKey = "testKey";
+        File expectedValueAsFile1 = new File("test1.txt");
+        String inputValueAsString1 = expectedValueAsFile1.getPath();
+        File expectedValueAsFile2 = new File("test2.txt");
+        String inputValueAsString2 = expectedValueAsFile2.getPath();
+        String[] args = new String[3];
+        args[0] = "-" + argKey;
+        args[1] = inputValueAsString1;
+        args[2] = inputValueAsString2;
+
+        processor.addConfig(config);
+        processor.addSubProcessor(subProcessor, ArgsProcessor.ArgType.FILE, argKey);
+
+        // act
+        TestFileValuesConfig resultConfig = (TestFileValuesConfig) processor.processArgs(args);
+
+        // assert
+        assertTrue(resultConfig.getFileValues().contains(expectedValueAsFile1));
+        assertTrue(resultConfig.getFileValues().contains(expectedValueAsFile2));
+        assertThat(resultConfig.getFileValues().size()).isEqualTo(2);
     }
 }

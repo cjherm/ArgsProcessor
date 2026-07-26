@@ -4,6 +4,7 @@ import io.github.cjherm.argsprocessor.ConfigurationClass;
 import io.github.cjherm.argsprocessor.SubProcessor;
 import io.github.cjherm.argsprocessor.configs.TestDoubleValuesConfig;
 
+import java.io.File;
 import java.util.List;
 
 public class TestDoubleValuesSubProcessor implements SubProcessor {
@@ -25,5 +26,11 @@ public class TestDoubleValuesSubProcessor implements SubProcessor {
         TestDoubleValuesConfig testDoubleValuesConfig = (TestDoubleValuesConfig) cfg;
         testDoubleValuesConfig.doubleValues = values;
         return testDoubleValuesConfig;
+    }
+
+    @Override
+    public ConfigurationClass insertFileArgs(ConfigurationClass cfg, List<File> values) {
+        // do nothing
+        return cfg;
     }
 }

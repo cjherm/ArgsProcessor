@@ -1,5 +1,6 @@
 package io.github.cjherm.argsprocessor;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,9 @@ public class ArgsProcessor {
                 cfg = descriptor.processor.insertDoubleArgs(cfg, doubleValues);
             }
             case FILE -> {
-                // TODO implement FILE args
+                List<String> stringValues = argsKeyValuePairs.get(arg);
+                List<File> fileValues = convertStringsToFiles(stringValues);
+                cfg = descriptor.processor.insertFileArgs(cfg, fileValues);
             }
         }
         return cfg;
@@ -89,6 +92,14 @@ public class ArgsProcessor {
             }
         }
         return doubleValues;
+    }
+
+    private List<File> convertStringsToFiles(List<String> stringValues) {
+        List<File> fileValues = new ArrayList<>();
+        for (String value : stringValues) {
+            fileValues.add(new File(value));
+        }
+        return fileValues;
     }
 
     private void createArgsKeyValueMapping(String[] args) {
